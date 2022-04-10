@@ -1,3 +1,3 @@
-import { ProductSubmission } from "components";
+import { ProductSubmission } from "../../../components/products/submission";
 
 export default ProductSubmission;

@@ -1,14 +1,16 @@
-import { Layout, Loader } from "components"
 import Link from 'next/link';
 import Router from "next/router";
-import { ProductTable } from "./table";
-import { Product } from 'app/models/products';
 import useSWR from 'swr';
-import { httpClient } from "app/http";
 import { AxiosResponse } from "axios";
-import { useProductService } from "app/services";
 import { useState, useEffect } from "react";
-import { Alert } from "components/common/message";
+
+import { Layout } from "../../layout"
+import { Loader } from '../../common/loader'
+import { ProductTable } from "./table";
+import { Product } from '../../../app/models/products';
+import { httpClient } from "../../../app/http";
+import { useProductService } from "../../../app/services/product.service";
+import { Alert } from "../../common/message";
 
 export const ProductList: React.FC = () => {
 

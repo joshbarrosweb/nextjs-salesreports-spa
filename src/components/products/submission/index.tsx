@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Layout, Input, Message } from 'components';
-import { useProductService } from 'app/services';
-import { Product } from 'app/models/products';
-import { convertToBigDecimal, formatBRL } from 'app/util/money';
-import { Alert } from 'components/common/message';
 import { useRouter } from 'next/router';
-import * as Yup from 'yup';
 import Link from 'next/link';
+import * as Yup from 'yup';
+
+import { Layout } from '../../layout';
+import { Input, InputMoney } from '../../common/input'
+import { useProductService } from '../../../app/services/product.service';
+import { Product } from '../../../app/models/products';
+import { convertToBigDecimal, formatBRL } from '../../../app/util/money';
+import { Alert } from '../../common/message';
+
 
 const validationSchema = Yup.object().shape({
   sku: Yup.string().trim().required("Field cannot be blank!"),
@@ -128,19 +131,18 @@ export const ProductSubmission: React.FC = () => {
           label="SKU: *"
           columnClasses="is-half"
           value={sku}
-          onChange={setSku}
+          onChange={e => setSku(e.target.value)}
           placeholder="SKU"
           error={errors?.sku}
         />
 
-        <Input
+        <InputMoney
           id="inputPrice"
           label="Price: *"
           columnClasses="is-half"
           value={price}
-          onChange={setPrice}
+          onChange={e => setPrice(e.target.value)}
           placeholder="Price"
-          currency
           maxLength={10}
           error={errors?.price}
         />
@@ -153,7 +155,7 @@ export const ProductSubmission: React.FC = () => {
           label="Name: *"
           columnClasses="is-full"
           value={name}
-          onChange={setName}
+          onChange={e => setName(e.target.value)}
           placeholder="Name"
           error={errors?.name}
         />

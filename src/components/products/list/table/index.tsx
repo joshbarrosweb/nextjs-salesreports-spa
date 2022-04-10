@@ -1,5 +1,9 @@
-import { useState } from 'react';
-import { Product } from 'app/models/products';
+import { Product } from '../../../../app/models/products'
+
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
+import { Button } from 'primereact/button'
+import { confirmDialog } from 'primereact/confirmdialog'
 
 interface ProductTableProps {
   products: Array<Product>;
@@ -8,63 +12,41 @@ interface ProductTableProps {
 }
 
 export const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete }) => {
-  return (
-    <table className="table is-striped is-hoverable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>SKU</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          products?.map( product => <ProductRow onDelete={onDelete} onEdit={onEdit} key={product.id} product={product} /> )
-        }
-      </tbody>
-    </table>
-  )
-}
+  const actionTemplate = (record: Product) => {
+    const editUrl = `/submissions/products?id=${record.id}`
 
-interface ProductRowProps {
-  product: Product;
-  onEdit: (product) => void;
-  onDelete: (product) => void;
-}
+    return (
+      <div>
+        <Button
+          label="Edit"
+          className="p-button-rounded p-button-info"
+          onClick={e=> onEdit(record)}
+        />
 
-const ProductRow: React.FC<ProductRowProps> = ({ product, onEdit, onDelete }) => {
-  const [deleting, setDeleting] = useState<boolean>(false);
-
-  const onDeleteClick = (product: Product) => {
-    if(deleting) {
-      onDelete(product);
-      setDeleting(false)
-    } else {
-      setDeleting(true);
-    }
+        <Button
+          label="Delete"
+          className="p-button-rounded p-button-danger"
+          onClick={e => {
+            confirmDialog({
+              header: "Delete Confirmation",
+              message: "Are you sure that you want to delete this record?",
+              acceptLabel: "Yes",
+              rejectLabel: "No",
+              accept: () => onDelete(record),
+            })
+          }}
+        />
+      </div>
+    )
   }
 
-  const cancelDelete = () => setDeleting(false);
-
   return (
-    <tr>
-    <td>{product.id}</td>
-    <td>{product.sku}</td>
-    <td>{product.name}</td>
-    <td>{product.price}</td>
-    <td>
-      {!deleting &&
-        <button onClick={e => onEdit(product)} className="button is-success is-rounded is-small">Edit</button>
-      }
-
-      <button onClick={e => onDeleteClick(product)} className="button is-danger is-rounded is-small">{ deleting ? "Are you Sure?" : "Delete"}</button>
-
-      {deleting &&
-        <button onClick={cancelDelete} className="button is-rounded is-small">Cancel</button>
-      }
-    </td>
-  </tr>
+    <DataTable value={products} paginator rows={5}>
+      <Column field="id" header="ID" />
+      <Column field="sku" header="SKU" />
+      <Column field="name" header="Name" />
+      <Column field="price" header="Price" />
+      <Column body={actionTemplate} header="" />
+    </DataTable>
   )
 }

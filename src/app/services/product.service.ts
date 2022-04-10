@@ -1,5 +1,5 @@
-import { httpClient } from 'app/http';
-import { Product } from 'app/models/products';
+import { httpClient } from '../http';
+import { Product } from '../models/products';
 import { AxiosResponse } from 'axios';
 
 const resourceURL: string = "api/products";
@@ -16,13 +16,13 @@ export const useProductService = () => {
     await httpClient.put<Product>(url, product);
   }
 
-  const showProductService = async(id): Promise<Product> => {
+  const showProductService = async(id: string): Promise<Product> => {
     const url: string = `${resourceURL}/${id}`;
     const response: AxiosResponse<Product> = await httpClient.get(url);
     return response.data;
   }
 
-  const deleteProductService = async(id): Promise<void> => {
+  const deleteProductService = async(id: string): Promise<void> => {
     const url: string = `${resourceURL}/${id}`;
     await httpClient.delete(url);
   }

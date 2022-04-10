@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { Menu } from './menu';
-import { Message } from 'components';
-import { Alert } from 'components/common/message';
+import { Message, Alert } from '../common/message';
 
 interface LayoutProps {
   id?: number;

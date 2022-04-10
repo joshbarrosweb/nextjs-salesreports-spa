@@ -1,35 +1,41 @@
 import { InputHTMLAttributes } from 'react';
 import { formatBRL } from 'app/util/money';
+import { FormatUtils } from '@4us-dev/utils';
+
+const formatUtils = new FormatUtils();
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
-  onChange?: (value) => void;
   label: string;
   columnClasses?: string;
-  currency?: boolean;
   error?: string;
+  formatter?: (value: string) => string | undefined;
 }
 
 export const Input: React.FC<InputProps> = ({
-  onChange,
   label,
   columnClasses,
   id,
-  currency,
   error,
+  formatter,
+  onChange,
   ...inputProps
 }: InputProps) => {
 
   const onInputChange = (event) => {
-    let value = event.target.value;
+    const value = event.target.value;
 
-    if (value && currency) {
-      value = formatBRL(value);
-    }
+    const name = event.target.name;
 
-    if(onChange) {
-      onChange(value)
-    }
+    const formattedValue = (formatter && formatter(value as string)) || value
+
+    onChange({
+      ...event,
+      target: {
+        name,
+        value: formattedValue
+      }
+    })
   }
 
   return (
@@ -37,13 +43,60 @@ export const Input: React.FC<InputProps> = ({
     <label className="label" htmlFor={id}>{label}</label>
     <div className="control">
       <input className="input"
-          id={id} {...inputProps}
           onChange={onInputChange}
+          id={id} {...inputProps}
       />
           {error &&
             <p className="help is-danger">{ error }</p>
           }
     </div>
   </div>
+  )
+}
+
+export const InputMoney: React.FC<InputProps> = (props: InputProps) => {
+  return (
+    <Input {...props} formatter={formatBRL} />
+  )
+}
+
+export const InputCPF: React.FC<InputProps> = (props: InputProps) => {
+  return (
+    <Input {...props} formatter={formatUtils.formatCPF} />
+  )
+}
+
+export const InputPhone: React.FC<InputProps> = (props: InputProps) => {
+  return (
+    <Input {...props} formatter={formatUtils.formatPhone} />
+  )
+}
+
+export const InputDate: React.FC<InputProps> = (props: InputProps) => {
+
+  const formatDate = (value: string) => {
+
+    if(!value) {
+      return '';
+    }
+
+    const data = formatUtils.formatOnlyIntegers(value);
+    const size = value.length;
+
+    if(size <= 2) {
+      return data;
+    }
+
+    if(size <= 4) {
+      return data.substr(0, 2) + "/" + data.substr(2, 2);
+    }
+
+    if(size <= 6) {
+      return data.substr(0, 2) + "/" + data.substr(2, 2) + "/" + data.substr(4, 2);
+    }
+  }
+
+  return (
+    <Input {...props} maxLength={10} formatter={formatDate} />
   )
 }
