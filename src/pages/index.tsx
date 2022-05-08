@@ -1,8 +1,27 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import { Layout } from '../components/layout'
+import { useContext } from "react";
+import { parseCookies } from "nookies";
+import type { GetServerSideProps, NextPage } from "next";
+import Head from "next/head";
 
-const Home: NextPage = () => {
+import { Layout } from "../components/layout";
+import { Dashboard } from "../components/dashboard";
+import { useDashboardService } from "../services/dashboard.service";
+import { DashboardData } from "../models/dashboard";
+import { AuthContext } from "contexts/AuthContext";
+import { getAPIClient } from "util/http/axios";
+
+interface HomeProps {
+  dashboard: DashboardData;
+}
+
+const Home: NextPage<HomeProps> = (props: HomeProps) => {
+  // const { signIn } = useContext(AuthContext); -> Move to Login Page
+  // async function handleSignIn(data) {
+  // await signIn(data);
+  // }
+
+  const { user } = useContext(AuthContext);
+
   return (
     <div>
       <Head>
@@ -11,9 +30,44 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Layout />
+      <Layout title="Dashboard">
+        <Dashboard
+          clients={props.dashboard.clients}
+          products={props.dashboard.products}
+          sales={props.dashboard.sales}
+          salesByMonth={props.dashboard.salesByMonth}
+        />
+      </Layout>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const service = useDashboardService();
+  const dashboard: DashboardData = await service.get();
+
+  // **auth to fix later...**
+  // const httpClient = getAPIClient(context);
+  // const { ["nextjs-token"]: token } = parseCookies(context);
+
+  /* if (!token) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  await httpClient.get("/users"); */
+
+  return {
+    props: {
+      dashboard,
+    },
+    // revalidate: 60,
+  };
+};
+
+export default Home;

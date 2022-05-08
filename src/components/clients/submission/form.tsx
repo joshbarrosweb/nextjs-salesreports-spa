@@ -1,9 +1,9 @@
-import { useFormik } from 'formik';
-import Router from 'next/router';
+import { useFormik } from "formik";
+import Router from "next/router";
 
-import { Client } from '../../../app/models/clients';
-import { Input, InputCPF, InputPhone, InputDate } from '../../common/input';
-import { validationSchema } from './validationSchema';
+import { Client } from "../../../models/clients";
+import { Input, InputCPF, InputPhone, InputDate } from "../../common/input";
+import { validationSchema } from "./validationSchema";
 
 interface ClientFormProps {
   client: Client;
@@ -11,46 +11,45 @@ interface ClientFormProps {
 }
 
 const formSchema: Client = {
-  id: '',
-  name: '',
-  cpf: '',
-  birthdate: '',
-  address: '',
-  email: '',
-  phone: '',
-  createdAt: '',
-}
+  id: "",
+  name: "",
+  cpf: "",
+  birthdate: "",
+  address: "",
+  email: "",
+  phone: "",
+  createdAt: "",
+};
 
 export const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit }) => {
-
   const formik = useFormik<Client>({
     initialValues: { ...formSchema, ...client },
     onSubmit,
     enableReinitialize: true,
-    validationSchema: validationSchema
-  })
+    validationSchema: validationSchema,
+  });
 
   return (
     <form onSubmit={formik.handleSubmit}>
       {formik.values.id && (
-            <div className="columns">
-              <Input
-                id="id"
-                name="id"
-                label="ID: "
-                disabled
-                columnClasses="is-half"
-                value={formik.values.id}
-              />
-              <Input
-                id="createdAt"
-                name="createdAt"
-                label="Created At: "
-                disabled
-                columnClasses="is-half"
-                value={formik.values.createdAt}
-              />
-            </div>
+        <div className="columns">
+          <Input
+            id="id"
+            name="id"
+            label="ID: "
+            disabled
+            columnClasses="is-half"
+            value={formik.values.id}
+          />
+          <Input
+            id="createdAt"
+            name="createdAt"
+            label="Created At: "
+            disabled
+            columnClasses="is-half"
+            value={formik.values.createdAt}
+          />
+        </div>
       )}
 
       <div className="columns">
@@ -122,16 +121,20 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit }) => {
       <div className="field is-grouped">
         <div className="control is-link">
           <button type="submit" className="button is-success">
-            { formik.values.id ? "Update" : "Save" }
+            {formik.values.id ? "Update" : "Save"}
           </button>
         </div>
 
         <div className="control">
-          <button type="button" className="button" onClick={e => Router.push("/list/clients")}>
+          <button
+            type="button"
+            className="button"
+            onClick={(e) => Router.push("/list/clients")}
+          >
             Return
           </button>
         </div>
       </div>
     </form>
-  )
-}
+  );
+};
